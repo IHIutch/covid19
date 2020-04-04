@@ -6,32 +6,36 @@
           <thead>
             <tr>
               <th class="border px-2 py-1">Date</th>
-              <th class="border px-2 py-1">Count</th>
-              <th class="border px-2 py-1">Daily</th>
               <th class="border px-2 py-1">Active</th>
-              <th class="border px-2 py-1">Deaths</th>
+              <th class="border px-2 py-1">Count</th>
+              <th class="border px-2 py-1">Diff</th>
+              <th class="border px-2 py-1">Rate</th>
+              <th class="border px-2 py-1">Avg Rate (7 Day)</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(row, idx) in jsonData"
+              v-for="(row, idx) in formattedData"
               :key="idx"
               :class="{ 'bg-gray-100': idx % 2 }"
             >
               <td class="border px-2 py-1">
-                {{ row.Date | date }}
+                {{ row.date | date }}
               </td>
               <td class="border px-2 py-1">
-                {{ row.ConfirmedCount_Total }}
+                {{ row.active }}
               </td>
               <td class="border px-2 py-1">
-                {{ row.ConfirmedCount_Daily }}
+                {{ row.count }}
               </td>
               <td class="border px-2 py-1">
-                {{ row.Active_Total }}
+                {{ row.diff }}
               </td>
               <td class="border px-2 py-1">
-                {{ row.Deaths_Total }}
+                {{ row.rate }}
+              </td>
+              <td class="border px-2 py-1">
+                {{ row.weeklyAvgRate }}
               </td>
             </tr>
           </tbody>
@@ -52,7 +56,7 @@
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
-            <h2 class="font-medium text-2xl">Daily Count Difference</h2>
+            <h2 class="font-medium text-2xl">Infection Rate</h2>
           </div>
           <div id="chartThree"></div>
         </div>
@@ -74,7 +78,6 @@ export default {
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=2000&cacheHint=true",
       jsonData: [],
-      formattedData: {},
     };
   },
   mounted() {
@@ -92,8 +95,28 @@ export default {
       });
   },
   methods: {
-    formatDates(value) {
-      return dayjs(value).format("MM-DD");
+    formatDates(date) {
+      return dayjs(date).format("MM-DD");
+    },
+    getRate(idx) {
+      return this.jsonData[idx - 1]
+        ? this.jsonData[idx].ConfirmedCount_Daily /
+            this.jsonData[idx - 1].ConfirmedCount_Daily
+        : 0;
+    },
+    getWeeklyAvg(idx) {
+      if (idx < 7) return 0;
+      let arr = [];
+      for (let i = idx - 6; i <= idx; i++) {
+        var rate = this.getRate(i);
+        if (rate == 0) return 0;
+        arr.push(rate);
+      }
+      return (
+        arr.reduce((sum, value) => {
+          return sum + value;
+        }, 0) / arr.length
+      );
     },
     initCharts() {
       this.initChartOne();
@@ -102,13 +125,13 @@ export default {
     },
     initChartOne() {
       const data = {
-        labels: this.jsonData.map((data) => {
-          return this.formatDates(data.Date);
+        labels: this.formattedData.map((data) => {
+          return this.formatDates(data.date);
         }),
         datasets: [
           {
-            values: this.jsonData.map((data) => {
-              return data.ConfirmedCount_Total;
+            values: this.formattedData.map((data) => {
+              return data.count;
             }),
           },
         ],
@@ -122,17 +145,13 @@ export default {
     },
     initChartTwo() {
       const data = {
-        labels: this.jsonData.map((data) => {
-          return this.formatDates(data.Date);
+        labels: this.formattedData.map((data) => {
+          return this.formatDates(data.date);
         }),
         datasets: [
           {
-            values: this.jsonData.map((data, idx) => {
-              if (!this.jsonData[idx - 1]) return 0;
-              return (
-                data.ConfirmedCount_Total -
-                this.jsonData[idx - 1].ConfirmedCount_Total
-              );
+            values: this.formattedData.map((data, idx) => {
+              return this.formattedData[idx - 1] ? data.diff : 0;
             }),
           },
         ],
@@ -146,17 +165,13 @@ export default {
     },
     initChartThree() {
       const data = {
-        labels: this.jsonData.map((data) => {
-          return this.formatDates(data.Date);
+        labels: this.formattedData.map((data) => {
+          return this.formatDates(data.date);
         }),
         datasets: [
           {
-            values: this.jsonData.map((data, idx) => {
-              if (!this.jsonData[idx - 1]) return 0;
-              return (
-                data.ConfirmedCount_Total -
-                this.jsonData[idx - 1].ConfirmedCount_Total
-              );
+            values: this.formattedData.map((data) => {
+              return data.rate;
             }),
           },
         ],
@@ -166,6 +181,21 @@ export default {
         type: "line",
         height: 250,
         colors: ["#ffa00a"],
+      });
+    },
+  },
+  computed: {
+    formattedData() {
+      return this.jsonData.map((data, idx) => {
+        return {
+          date: data.Date,
+          count: data.ConfirmedCount_Total,
+          diff: this.jsonData[idx - 1] ? data.ConfirmedCount_Daily : 0,
+          rate: this.getRate(idx).toFixed(2),
+          weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
+          active: data.Active_Total,
+          deaths: data.Deaths_Total,
+        };
       });
     },
   },
