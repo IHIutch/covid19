@@ -1,10 +1,46 @@
 <template>
   <Layout>
-    <h1>Hey</h1>
+    <div class="container mx-auto">
+      <div class="mb-6">
+        <h1>Hey</h1>
+      </div>
+      <table class="text-left">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Confirmed Count</th>
+            <th>Daily</th>
+            <th>Active</th>
+            <th>Deaths</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, idx) in jsonData" :key="idx">
+            <td>
+              {{ row.Date | date }}
+            </td>
+            <td>
+              {{ row.ConfirmedCount_Total }}
+            </td>
+            <td>
+              {{ row.ConfirmedCount_Daily }}
+            </td>
+            <td>
+              {{ row.Active_Total }}
+            </td>
+            <td>
+              {{ row.Deaths_Total }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </Layout>
 </template>
 
 <script>
+import dayjs from "dayjs";
+
 export default {
   metaInfo: {
     title: "Hello, world!",
@@ -26,6 +62,11 @@ export default {
           return data.attributes;
         });
       });
+  },
+  filters: {
+    date(value) {
+      return dayjs(value).format("MM-DD");
+    },
   },
 };
 </script>
