@@ -50,6 +50,12 @@
           </div>
           <div id="chartTwo"></div>
         </div>
+        <div class="shadow border rounded p-4 w-full mb-6">
+          <div>
+            <h2 class="font-medium text-2xl">Daily Count Difference</h2>
+          </div>
+          <div id="chartThree"></div>
+        </div>
       </div>
     </div>
   </Layout>
@@ -92,6 +98,7 @@ export default {
     initCharts() {
       this.initChartOne();
       this.initChartTwo();
+      this.initChartThree();
     },
     initChartOne() {
       const data = {
@@ -135,6 +142,30 @@ export default {
         type: "line",
         height: 250,
         colors: ["#743ee2"],
+      });
+    },
+    initChartThree() {
+      const data = {
+        labels: this.jsonData.map((data) => {
+          return this.formatDates(data.Date);
+        }),
+        datasets: [
+          {
+            values: this.jsonData.map((data, idx) => {
+              if (!this.jsonData[idx - 1]) return 0;
+              return (
+                data.ConfirmedCount_Total -
+                this.jsonData[idx - 1].ConfirmedCount_Total
+              );
+            }),
+          },
+        ],
+      };
+      const chart = new Chart("#chartThree", {
+        data: data,
+        type: "line",
+        height: 250,
+        colors: ["#ffa00a"],
       });
     },
   },
