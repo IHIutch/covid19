@@ -1,0 +1,13 @@
+{
+  "name": "covid19",
+  "private": true,
+  "scripts": {
+    "build": "gridsome build",
+    "develop": "gridsome develop",
+    "explore": "gridsome explore"
+  },
+  "dependencies": {
+    "@gridsome/transformer-json": "^0.2.1",
+    "gridsome": "^0.7.0"
+  }
+}
