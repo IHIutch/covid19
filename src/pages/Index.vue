@@ -78,12 +78,11 @@
 
 <script>
 import dayjs from "dayjs";
-// import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
 import ChartJS from "chart.js";
 
 export default {
   metaInfo: {
-    title: "Hello, world!",
+    title: "Covid 19 Data",
   },
   data() {
     return {
