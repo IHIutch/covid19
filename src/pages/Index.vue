@@ -60,6 +60,12 @@
           </div>
           <div id="chartThree"></div>
         </div>
+        <div class="shadow border rounded p-4 w-full mb-6">
+          <div>
+            <h2 class="font-medium text-2xl">Infection Rate</h2>
+          </div>
+          <div id="chartFour"></div>
+        </div>
       </div>
     </div>
   </Layout>
@@ -183,6 +189,41 @@ export default {
         colors: ["#ffa00a"],
       });
     },
+    initChartFour() {
+      const data = {
+        labels: this.formattedData.map((data) => {
+          return this.formatDates(data.date);
+        }),
+        datasets: [
+          {
+            values: this.formattedData.map((data) => {
+              return data.rate;
+            }),
+          },
+        ],
+      };
+      const chart = new Chart("#chartFour", {
+        data: data,
+        type: "line",
+        height: 250,
+        colors: ["#ffa00a"],
+      });
+    },
+    getPrediction(data) {
+      let arr = [
+        {
+          date: dayjs(data.date),
+          count: data.count,
+        },
+      ];
+      for (let i = 0; i < 6; i++) {
+        arr.push({
+          date: dayjs(arr[i].date).add(1, "day"),
+          count: arr[i].count * parseFloat(data.weeklyAvgRate),
+        });
+      }
+      return arr;
+    },
   },
   computed: {
     formattedData() {
@@ -196,6 +237,15 @@ export default {
           active: data.Active_Total,
           deaths: data.Deaths_Total,
         };
+      });
+    },
+    predictedData() {
+      let filteredArr = [];
+      filteredArr = this.formattedData.filter((data) => {
+        return data.weeklyAvgRate != 0;
+      });
+      return filteredArr.map((data) => {
+        return this.getPrediction(data);
       });
     },
   },
