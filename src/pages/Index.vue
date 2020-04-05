@@ -82,7 +82,25 @@ export default {
   },
   data() {
     return {
-      colors: ["red", "orange", "yellow", "green", "blue", "purple", "grey"],
+      colors: [
+        "#7fdbff",
+        "#0074d9",
+        "#01ff70",
+        "#001f3f",
+        "#39cccc",
+        "#ff4136",
+        "#85144b",
+        "#ff851b",
+        "#b10dc9",
+        "#ffdc00",
+        "#2ecc40",
+        "#f012be",
+        "#aaaaaa",
+        "#ffffff",
+        "#111111",
+        "#3d9970",
+        "#dddddd",
+      ],
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=2000&cacheHint=true",
       jsonData: [],
@@ -233,6 +251,7 @@ export default {
         return [...new Set([...acc, ...data.dates])];
       }, []);
       let datasets = this.predictedData.map((data, dataIdx) => {
+        console.log(dataIdx % this.colors.length);
         return {
           fill: false,
           backgroundColor: this.colors[dataIdx % this.colors.length],
