@@ -151,7 +151,7 @@ export default {
           this.initCharts();
         });
     },
-    formatDates(date) {
+    formatDate(date) {
       return dayjs(date).format("MM/DD");
     },
     getRate(idx) {
@@ -187,7 +187,7 @@ export default {
     initChartOne() {
       const data = {
         labels: this.formattedData.map((data) => {
-          return this.formatDates(data.date);
+          return this.formatDate(data.date);
         }),
         datasets: [
           {
@@ -219,7 +219,7 @@ export default {
     initChartTwo() {
       const data = {
         labels: this.formattedData.map((data) => {
-          return this.formatDates(data.date);
+          return this.formatDate(data.date);
         }),
         datasets: [
           {
@@ -251,7 +251,7 @@ export default {
     initChartThree() {
       const data = {
         labels: this.formattedData.map((data) => {
-          return this.formatDates(data.date);
+          return this.formatDate(data.date);
         }),
         datasets: [
           {
@@ -325,7 +325,7 @@ export default {
         obj.counts.push(multi.toFixed(2));
       }
       obj.dates = obj.dates.map((date) => {
-        return this.formatDates(date);
+        return this.formatDate(date);
       });
       return obj;
     },
@@ -366,7 +366,7 @@ export default {
   },
   filters: {
     date(value) {
-      return dayjs(value).format("MM-DD");
+      return dayjs(value).format("MM/DD");
     },
   },
 };
