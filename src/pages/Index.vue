@@ -62,7 +62,7 @@
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
-            <h2 class="font-medium text-2xl">Infection Rate</h2>
+            <h2 class="font-medium text-2xl">Prediction Counts</h2>
           </div>
           <div id="chartFour"></div>
         </div>
@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     formatDates(date) {
-      return dayjs(date).format("MM-DD");
+      return dayjs(date).format("MM/DD");
     },
     getRate(idx) {
       return this.jsonData[idx - 1]
@@ -128,6 +128,7 @@ export default {
       this.initChartOne();
       this.initChartTwo();
       this.initChartThree();
+      this.initChartFour();
     },
     initChartOne() {
       const data = {
@@ -190,39 +191,45 @@ export default {
       });
     },
     initChartFour() {
+      let labels = this.predictedData.reduce((acc, data) => {
+        return [...new Set([...acc, ...data.dates])];
+      }, []);
+      let datasets = this.predictedData.map((data, dataIdx) => {
+        return {
+          name: `${data.dates[0]} - ${data.dates[data.dates.length - 1]}`,
+          values: labels.map((label) => {
+            let labelIdx = data.dates.indexOf(label);
+            return labelIdx == -1 ? null : data.counts[labelIdx];
+          }),
+        };
+      });
       const data = {
-        labels: this.formattedData.map((data) => {
-          return this.formatDates(data.date);
-        }),
-        datasets: [
-          {
-            values: this.formattedData.map((data) => {
-              return data.rate;
-            }),
-          },
-        ],
+        labels: labels,
+        datasets: datasets,
       };
       const chart = new Chart("#chartFour", {
         data: data,
         type: "line",
         height: 250,
-        colors: ["#ffa00a"],
+        axisOptions: {
+          xIsSeries: 1,
+        },
+        lineOptions: {
+          hideDots: 1,
+        },
       });
     },
     getPrediction(data) {
-      let arr = [
-        {
-          date: dayjs(data.date),
-          count: data.count,
-        },
-      ];
+      let obj = {
+        dates: [this.formatDates(data.date)],
+        counts: [data.count],
+      };
       for (let i = 0; i < 6; i++) {
-        arr.push({
-          date: dayjs(arr[i].date).add(1, "day"),
-          count: arr[i].count * parseFloat(data.weeklyAvgRate),
-        });
+        obj.dates.push(this.formatDates(dayjs(obj.dates[i]).add(1, "day")));
+        let multi = obj.counts[i] * parseFloat(data.weeklyAvgRate);
+        obj.counts.push(multi.toFixed(2));
       }
-      return arr;
+      return obj;
     },
   },
   computed: {
