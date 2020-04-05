@@ -82,6 +82,7 @@ export default {
   },
   data() {
     return {
+      colors: ["red", "orange", "yellow", "green", "blue", "purple", "grey"],
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=2000&cacheHint=true",
       jsonData: [],
@@ -138,6 +139,9 @@ export default {
         }),
         datasets: [
           {
+            fill: false,
+            backgroundColor: this.colors[0],
+            borderColor: this.colors[0],
             data: this.formattedData.map((data) => {
               return data.count;
             }),
@@ -149,7 +153,14 @@ export default {
         type: "line",
         data: data,
         options: {
+          legend: {
+            display: false,
+          },
           responsive: true,
+          tooltips: {
+            mode: "index",
+            intersect: false,
+          },
         },
       });
     },
@@ -160,6 +171,9 @@ export default {
         }),
         datasets: [
           {
+            fill: false,
+            backgroundColor: this.colors[0],
+            borderColor: this.colors[0],
             data: this.formattedData.map((data, idx) => {
               return this.formattedData[idx - 1] ? data.diff : 0;
             }),
@@ -171,7 +185,14 @@ export default {
         type: "line",
         data: data,
         options: {
+          legend: {
+            display: false,
+          },
           responsive: true,
+          tooltips: {
+            mode: "index",
+            intersect: false,
+          },
         },
       });
     },
@@ -182,6 +203,9 @@ export default {
         }),
         datasets: [
           {
+            fill: false,
+            backgroundColor: this.colors[0],
+            borderColor: this.colors[0],
             data: this.formattedData.map((data) => {
               return data.rate;
             }),
@@ -193,7 +217,14 @@ export default {
         type: "line",
         data: data,
         options: {
+          legend: {
+            display: false,
+          },
           responsive: true,
+          tooltips: {
+            mode: "index",
+            intersect: false,
+          },
         },
       });
     },
@@ -203,6 +234,9 @@ export default {
       }, []);
       let datasets = this.predictedData.map((data, dataIdx) => {
         return {
+          fill: false,
+          backgroundColor: this.colors[dataIdx % this.colors.length],
+          borderColor: this.colors[dataIdx % this.colors.length],
           label: `${data.dates[0]} - ${data.dates[data.dates.length - 1]}`,
           data: labels.map((label) => {
             let labelIdx = data.dates.indexOf(label);
@@ -213,14 +247,18 @@ export default {
       const data = {
         labels: labels,
         datasets: datasets,
-        options: {
-          responsive: true,
-        },
       };
       const ctx = document.getElementById("chartFour");
       const chart = new Chart(ctx, {
         type: "line",
         data: data,
+        options: {
+          responsive: true,
+          tooltips: {
+            mode: "index",
+            intersect: false,
+          },
+        },
       });
     },
     getPrediction(data) {
