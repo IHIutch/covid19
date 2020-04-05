@@ -130,10 +130,14 @@ export default {
       return dayjs(date).format("MM/DD");
     },
     getRate(idx) {
-      return this.jsonData[idx - 1]
-        ? this.jsonData[idx].ConfirmedCount_Daily /
-            this.jsonData[idx - 1].ConfirmedCount_Daily
-        : 0;
+      if (!this.jsonData[idx - 2]) return 0;
+      let currentDiff =
+        this.jsonData[idx].ConfirmedCount_Total -
+        this.jsonData[idx - 1].ConfirmedCount_Total;
+      let prevDiff =
+        this.jsonData[idx - 1].ConfirmedCount_Total -
+        this.jsonData[idx - 2].ConfirmedCount_Total;
+      return currentDiff / prevDiff;
     },
     getWeeklyAvg(idx) {
       if (idx < 7) return 0;
