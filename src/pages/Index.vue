@@ -1,48 +1,50 @@
 <template>
   <Layout>
-    <div class="container mx-auto flex my-8">
-      <div class="flex-shrink-0 px-4">
-        <div class="mb-4">
-          <h1 class="text-2xl font-medium">Last Updated {{ lastUpdated }}</h1>
+    <div class="container mx-auto flex py-8">
+      <div class="flex-shrink-0 px-4 relative">
+        <div class="sticky top-0 -mt-8 py-8">
+          <div class="mb-4">
+            <h1 class="text-2xl font-medium">Last Updated {{ lastUpdated }}</h1>
+          </div>
+          <table class="text-left table-auto">
+            <thead>
+              <tr>
+                <th class="border px-2 py-1">Date</th>
+                <th class="border px-2 py-1">Active</th>
+                <th class="border px-2 py-1">Count</th>
+                <th class="border px-2 py-1">Diff</th>
+                <th class="border px-2 py-1">Rate</th>
+                <th class="border px-2 py-1">Avg Rate (7 Day)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(row, idx) in formattedData"
+                :key="idx"
+                :class="{ 'bg-gray-100': idx % 2 }"
+              >
+                <td class="border px-2 py-1">
+                  {{ row.date | date }}
+                </td>
+                <td class="border px-2 py-1">
+                  {{ row.active }}
+                </td>
+                <td class="border px-2 py-1">
+                  {{ row.count }}
+                </td>
+                <td class="border px-2 py-1">
+                  {{ row.diff }}
+                </td>
+                <td class="border px-2 py-1">
+                  {{ row.rate }}
+                </td>
+                <td class="border px-2 py-1">
+                  {{ row.weeklyAvgRate }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <table class="text-left table-auto">
-          <thead>
-            <tr>
-              <th class="border px-2 py-1">Date</th>
-              <th class="border px-2 py-1">Active</th>
-              <th class="border px-2 py-1">Count</th>
-              <th class="border px-2 py-1">Diff</th>
-              <th class="border px-2 py-1">Rate</th>
-              <th class="border px-2 py-1">Avg Rate (7 Day)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(row, idx) in formattedData"
-              :key="idx"
-              :class="{ 'bg-gray-100': idx % 2 }"
-            >
-              <td class="border px-2 py-1">
-                {{ row.date | date }}
-              </td>
-              <td class="border px-2 py-1">
-                {{ row.active }}
-              </td>
-              <td class="border px-2 py-1">
-                {{ row.count }}
-              </td>
-              <td class="border px-2 py-1">
-                {{ row.diff }}
-              </td>
-              <td class="border px-2 py-1">
-                {{ row.rate }}
-              </td>
-              <td class="border px-2 py-1">
-                {{ row.weeklyAvgRate }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
       <div class="flex-grow px-4">
         <div class="shadow border rounded p-4 w-full mb-6">
