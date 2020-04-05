@@ -264,7 +264,7 @@ export default {
           fill: false,
           backgroundColor: this.colors[dataIdx % this.colors.length],
           borderColor: this.colors[dataIdx % this.colors.length],
-          label: `${data.dates[0]} - ${data.dates[data.dates.length - 1]}`,
+          label: data.dates[0] + " - " + data.dates[data.dates.length - 1],
           data: labels.map((label) => {
             let labelIdx = data.dates.indexOf(label);
             return labelIdx == -1 ? null : data.counts[labelIdx];
@@ -289,15 +289,19 @@ export default {
       });
     },
     getPrediction(data) {
+      // console.log(data.date);
       let obj = {
-        dates: [this.formatDates(data.date)],
+        dates: [data.date],
         counts: [data.count],
       };
       for (let i = 0; i < 6; i++) {
-        obj.dates.push(this.formatDates(dayjs(obj.dates[i]).add(1, "day")));
+        obj.dates.push(obj.dates[i] + 86400000);
         let multi = obj.counts[i] * parseFloat(data.weeklyAvgRate);
         obj.counts.push(multi.toFixed(2));
       }
+      obj.dates = obj.dates.map((date) => {
+        return this.formatDates(date);
+      });
       return obj;
     },
   },
