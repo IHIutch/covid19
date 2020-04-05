@@ -310,7 +310,10 @@ export default {
         return {
           date: data.Date,
           count: data.ConfirmedCount_Total,
-          diff: this.jsonData[idx - 1] ? data.ConfirmedCount_Daily : 0,
+          diff: this.jsonData[idx - 1]
+            ? this.jsonData[idx].ConfirmedCount_Total -
+              this.jsonData[idx - 1].ConfirmedCount_Total
+            : 0,
           rate: this.getRate(idx).toFixed(2),
           weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
           active: data.Active_Total,
