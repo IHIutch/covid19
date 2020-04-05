@@ -2,6 +2,9 @@
   <Layout>
     <div class="container mx-auto flex my-8">
       <div class="flex-shrink-0 px-4">
+        <div class="mb-4">
+          <h1 class="text-2xl font-medium">Last Updated {{ lastUpdated }}</h1>
+        </div>
         <table class="text-left table-auto">
           <thead>
             <tr>
@@ -251,7 +254,6 @@ export default {
         return [...new Set([...acc, ...data.dates])];
       }, []);
       let datasets = this.predictedData.map((data, dataIdx) => {
-        console.log(dataIdx % this.colors.length);
         return {
           fill: false,
           backgroundColor: this.colors[dataIdx % this.colors.length],
@@ -294,6 +296,13 @@ export default {
     },
   },
   computed: {
+    lastUpdated() {
+      return this.jsonData.length
+        ? dayjs(this.jsonData[this.jsonData.length - 1].Date).format(
+            "MMMM DD, YYYY"
+          )
+        : null;
+    },
     formattedData() {
       return this.jsonData.map((data, idx) => {
         return {
