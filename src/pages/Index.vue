@@ -96,12 +96,12 @@ export default {
     return {
       colors: [
         "#7fdbff",
+        "#85144b",
         "#0074d9",
         "#01ff70",
         "#001f3f",
         "#39cccc",
         "#ff4136",
-        "#85144b",
         "#ff851b",
         "#b10dc9",
         "#ffdc00",
