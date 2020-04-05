@@ -46,25 +46,25 @@
           <div>
             <h2 class="font-medium text-2xl">Confirmed Daily Count</h2>
           </div>
-          <div id="chartOne"></div>
+          <canvas id="chartOne"></canvas>
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
             <h2 class="font-medium text-2xl">Daily Count Difference</h2>
           </div>
-          <div id="chartTwo"></div>
+          <canvas id="chartTwo"></canvas>
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
             <h2 class="font-medium text-2xl">Infection Rate</h2>
           </div>
-          <div id="chartThree"></div>
+          <canvas id="chartThree"></canvas>
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
             <h2 class="font-medium text-2xl">Prediction Counts</h2>
           </div>
-          <div id="chartFour"></div>
+          <canvas id="chartFour"></canvas>
         </div>
       </div>
     </div>
@@ -73,7 +73,8 @@
 
 <script>
 import dayjs from "dayjs";
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
+// import { Chart } from "frappe-charts/dist/frappe-charts.min.esm";
+import ChartJS from "chart.js";
 
 export default {
   metaInfo: {
@@ -137,17 +138,19 @@ export default {
         }),
         datasets: [
           {
-            values: this.formattedData.map((data) => {
+            data: this.formattedData.map((data) => {
               return data.count;
             }),
           },
         ],
       };
-      const chart = new Chart("#chartOne", {
-        data: data,
+      const ctx = document.getElementById("chartOne");
+      const chart = new Chart(ctx, {
         type: "line",
-        height: 250,
-        colors: ["#7cd6fd"],
+        data: data,
+        options: {
+          responsive: true,
+        },
       });
     },
     initChartTwo() {
@@ -157,17 +160,19 @@ export default {
         }),
         datasets: [
           {
-            values: this.formattedData.map((data, idx) => {
+            data: this.formattedData.map((data, idx) => {
               return this.formattedData[idx - 1] ? data.diff : 0;
             }),
           },
         ],
       };
-      const chart = new Chart("#chartTwo", {
-        data: data,
+      const ctx = document.getElementById("chartTwo");
+      const chart = new Chart(ctx, {
         type: "line",
-        height: 250,
-        colors: ["#743ee2"],
+        data: data,
+        options: {
+          responsive: true,
+        },
       });
     },
     initChartThree() {
@@ -177,17 +182,19 @@ export default {
         }),
         datasets: [
           {
-            values: this.formattedData.map((data) => {
+            data: this.formattedData.map((data) => {
               return data.rate;
             }),
           },
         ],
       };
-      const chart = new Chart("#chartThree", {
-        data: data,
+      const ctx = document.getElementById("chartThree");
+      const chart = new Chart(ctx, {
         type: "line",
-        height: 250,
-        colors: ["#ffa00a"],
+        data: data,
+        options: {
+          responsive: true,
+        },
       });
     },
     initChartFour() {
@@ -196,8 +203,8 @@ export default {
       }, []);
       let datasets = this.predictedData.map((data, dataIdx) => {
         return {
-          name: `${data.dates[0]} - ${data.dates[data.dates.length - 1]}`,
-          values: labels.map((label) => {
+          label: `${data.dates[0]} - ${data.dates[data.dates.length - 1]}`,
+          data: labels.map((label) => {
             let labelIdx = data.dates.indexOf(label);
             return labelIdx == -1 ? null : data.counts[labelIdx];
           }),
@@ -206,17 +213,14 @@ export default {
       const data = {
         labels: labels,
         datasets: datasets,
+        options: {
+          responsive: true,
+        },
       };
-      const chart = new Chart("#chartFour", {
-        data: data,
+      const ctx = document.getElementById("chartFour");
+      const chart = new Chart(ctx, {
         type: "line",
-        height: 250,
-        axisOptions: {
-          xIsSeries: 1,
-        },
-        lineOptions: {
-          hideDots: 1,
-        },
+        data: data,
       });
     },
     getPrediction(data) {
