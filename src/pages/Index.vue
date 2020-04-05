@@ -4,7 +4,15 @@
       <div class="flex-shrink-0 px-4 relative">
         <div class="sticky top-0 -mt-8 py-8">
           <div class="mb-4">
-            <h1 class="text-2xl font-medium">Last Updated {{ lastUpdated }}</h1>
+            <h1 class="">
+              <div>
+                <span
+                  class="uppercase text-gray-600 tracking-wider font-medium text-sm"
+                  >Last Updated:
+                </span>
+              </div>
+              <span class="text-2xl font-medium">{{ lastUpdated }}</span>
+            </h1>
           </div>
           <table class="text-left table-auto">
             <thead>
@@ -107,24 +115,42 @@ export default {
       ],
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=1%3D1&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=2000&cacheHint=true",
+      dataUrl:
+        "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1/FeatureServer/0?f=json",
+      lastUpdated: "",
       jsonData: [],
     };
   },
   mounted() {
-    fetch(this.apiUrl)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.jsonData = data.features.map((data) => {
-          return data.attributes;
-        });
-      })
-      .then(() => {
-        this.initCharts();
-      });
+    this.fetchData();
+    this.fetchUpdateTime();
   },
   methods: {
+    fetchUpdateTime() {
+      fetch(this.dataUrl)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          this.lastUpdated = dayjs(data.editingInfo.lastEditDate).format(
+            "MMMM DD, YYYY hh:mma"
+          );
+        });
+    },
+    fetchData() {
+      fetch(this.apiUrl)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          this.jsonData = data.features.map((data) => {
+            return data.attributes;
+          });
+        })
+        .then(() => {
+          this.initCharts();
+        });
+    },
     formatDates(date) {
       return dayjs(date).format("MM/DD");
     },
@@ -305,13 +331,13 @@ export default {
     },
   },
   computed: {
-    lastUpdated() {
-      return this.jsonData.length
-        ? dayjs(this.jsonData[this.jsonData.length - 1].Date).format(
-            "MMMM DD, YYYY"
-          )
-        : null;
-    },
+    // lastUpdated() {
+    //   return this.jsonData.length
+    //     ? dayjs(this.jsonData[this.jsonData.length - 1].Date).format(
+    //         "MMMM DD, YYYY"
+    //       )
+    //     : null;
+    // },
     formattedData() {
       return this.jsonData.map((data, idx) => {
         return {
