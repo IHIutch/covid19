@@ -41,13 +41,13 @@
                   {{ row.count }}
                 </td>
                 <td class="border px-2 py-1">
-                  {{ row.diff }}
+                  {{ row.diff == 0 ? "-" : row.diff }}
                 </td>
                 <td class="border px-2 py-1">
-                  {{ row.rate }}
+                  {{ row.rate == "0.00" ? "-" : row.rate }}
                 </td>
                 <td class="border px-2 py-1">
-                  {{ row.weeklyAvgRate }}
+                  {{ row.weeklyAvgRate == "0.00" ? "-" : row.weeklyAvgRate }}
                 </td>
               </tr>
             </tbody>
