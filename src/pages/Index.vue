@@ -90,7 +90,7 @@ import ChartJS from "chart.js";
 
 export default {
   metaInfo: {
-    title: "Covid 19 Data",
+    title: "Covid 19 Data"
   },
   data() {
     return {
@@ -108,17 +108,16 @@ export default {
         "#2ecc40",
         "#f012be",
         "#aaaaaa",
-        "#ffffff",
         "#111111",
         "#3d9970",
-        "#dddddd",
+        "#dddddd"
       ],
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=ConfirmedCount_Total%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&outSR=102100&resultOffset=0&resultRecordCount=2000&cacheHint=true",
       dataUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1/FeatureServer/0?f=json",
       lastUpdated: "",
-      jsonData: [],
+      jsonData: []
     };
   },
   mounted() {
@@ -128,10 +127,10 @@ export default {
   methods: {
     fetchUpdateTime() {
       fetch(this.dataUrl)
-        .then((res) => {
+        .then(res => {
           return res.json();
         })
-        .then((data) => {
+        .then(data => {
           this.lastUpdated = dayjs(data.editingInfo.lastEditDate).format(
             "MMMM DD, YYYY hh:mma"
           );
@@ -139,11 +138,11 @@ export default {
     },
     fetchData() {
       fetch(this.apiUrl)
-        .then((response) => {
+        .then(response => {
           return response.json();
         })
-        .then((data) => {
-          this.jsonData = data.features.map((data) => {
+        .then(data => {
+          this.jsonData = data.features.map(data => {
             return data.attributes;
           });
         })
@@ -186,7 +185,7 @@ export default {
     },
     initChartOne() {
       const data = {
-        labels: this.formattedData.map((data) => {
+        labels: this.formattedData.map(data => {
           return this.formatDate(data.date);
         }),
         datasets: [
@@ -194,11 +193,11 @@ export default {
             fill: false,
             backgroundColor: this.colors[0],
             borderColor: this.colors[0],
-            data: this.formattedData.map((data) => {
+            data: this.formattedData.map(data => {
               return data.count;
-            }),
-          },
-        ],
+            })
+          }
+        ]
       };
       const ctx = document.getElementById("chartOne");
       const chart = new Chart(ctx, {
@@ -206,19 +205,19 @@ export default {
         data: data,
         options: {
           legend: {
-            display: false,
+            display: false
           },
           responsive: true,
           tooltips: {
             mode: "index",
-            intersect: false,
-          },
-        },
+            intersect: false
+          }
+        }
       });
     },
     initChartTwo() {
       const data = {
-        labels: this.formattedData.map((data) => {
+        labels: this.formattedData.map(data => {
           return this.formatDate(data.date);
         }),
         datasets: [
@@ -228,9 +227,9 @@ export default {
             borderColor: this.colors[0],
             data: this.formattedData.map((data, idx) => {
               return this.formattedData[idx - 1] ? data.diff : 0;
-            }),
-          },
-        ],
+            })
+          }
+        ]
       };
       const ctx = document.getElementById("chartTwo");
       const chart = new Chart(ctx, {
@@ -238,19 +237,19 @@ export default {
         data: data,
         options: {
           legend: {
-            display: false,
+            display: false
           },
           responsive: true,
           tooltips: {
             mode: "index",
-            intersect: false,
-          },
-        },
+            intersect: false
+          }
+        }
       });
     },
     initChartThree() {
       const data = {
-        labels: this.formattedData.map((data) => {
+        labels: this.formattedData.map(data => {
           return this.formatDate(data.date);
         }),
         datasets: [
@@ -258,11 +257,11 @@ export default {
             fill: false,
             backgroundColor: this.colors[0],
             borderColor: this.colors[0],
-            data: this.formattedData.map((data) => {
+            data: this.formattedData.map(data => {
               return data.rate;
-            }),
-          },
-        ],
+            })
+          }
+        ]
       };
       const ctx = document.getElementById("chartThree");
       const chart = new Chart(ctx, {
@@ -270,14 +269,14 @@ export default {
         data: data,
         options: {
           legend: {
-            display: false,
+            display: false
           },
           responsive: true,
           tooltips: {
             mode: "index",
-            intersect: false,
-          },
-        },
+            intersect: false
+          }
+        }
       });
     },
     initChartFour() {
@@ -290,15 +289,15 @@ export default {
           backgroundColor: this.colors[dataIdx % this.colors.length],
           borderColor: this.colors[dataIdx % this.colors.length],
           label: data.dates[0] + " - " + data.dates[data.dates.length - 1],
-          data: labels.map((label) => {
+          data: labels.map(label => {
             let labelIdx = data.dates.indexOf(label);
             return labelIdx == -1 ? null : data.counts[labelIdx];
-          }),
+          })
         };
       });
       const data = {
         labels: labels,
-        datasets: datasets,
+        datasets: datasets
       };
       const ctx = document.getElementById("chartFour");
       const chart = new Chart(ctx, {
@@ -308,27 +307,27 @@ export default {
           responsive: true,
           tooltips: {
             mode: "index",
-            intersect: false,
-          },
-        },
+            intersect: false
+          }
+        }
       });
     },
     getPrediction(data) {
       // console.log(data.date);
       let obj = {
         dates: [data.date],
-        counts: [data.count],
+        counts: [data.count]
       };
       for (let i = 0; i < 6; i++) {
         obj.dates.push(obj.dates[i] + 86400000);
         let multi = obj.counts[i] * parseFloat(data.weeklyAvgRate);
         obj.counts.push(multi.toFixed(2));
       }
-      obj.dates = obj.dates.map((date) => {
+      obj.dates = obj.dates.map(date => {
         return this.formatDate(date);
       });
       return obj;
-    },
+    }
   },
   computed: {
     // lastUpdated() {
@@ -350,24 +349,24 @@ export default {
           rate: this.getRate(idx).toFixed(2),
           weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
           active: data.Active_Total,
-          deaths: data.Deaths_Total,
+          deaths: data.Deaths_Total
         };
       });
     },
     predictedData() {
       let filteredArr = [];
-      filteredArr = this.formattedData.filter((data) => {
+      filteredArr = this.formattedData.filter(data => {
         return data.weeklyAvgRate != 0;
       });
-      return filteredArr.map((data) => {
+      return filteredArr.map(data => {
         return this.getPrediction(data);
       });
-    },
+    }
   },
   filters: {
     date(value) {
       return dayjs(value).format("MM/DD");
-    },
-  },
+    }
+  }
 };
 </script>
