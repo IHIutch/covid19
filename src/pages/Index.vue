@@ -154,14 +154,11 @@ export default {
       return dayjs(date).format("MM/DD");
     },
     getRate(idx) {
-      if (!this.jsonData[idx - 2]) return 0;
-      let currentDiff =
-        this.jsonData[idx].ConfirmedCount_Total -
-        this.jsonData[idx - 1].ConfirmedCount_Total;
-      let prevDiff =
-        this.jsonData[idx - 1].ConfirmedCount_Total -
-        this.jsonData[idx - 2].ConfirmedCount_Total;
-      return currentDiff / prevDiff;
+      if (!this.jsonData[idx - 1]) return 0;
+      return (
+        this.jsonData[idx].ConfirmedCount_Total /
+        this.jsonData[idx - 1].ConfirmedCount_Total
+      );
     },
     getWeeklyAvg(idx) {
       if (idx < 7) return 0;
@@ -313,7 +310,6 @@ export default {
       });
     },
     getPrediction(data) {
-      // console.log(data.date);
       let obj = {
         dates: [data.date],
         counts: [data.count],
@@ -330,13 +326,6 @@ export default {
     },
   },
   computed: {
-    // lastUpdated() {
-    //   return this.jsonData.length
-    //     ? dayjs(this.jsonData[this.jsonData.length - 1].Date).format(
-    //         "MMMM DD, YYYY"
-    //       )
-    //     : null;
-    // },
     formattedData() {
       return this.jsonData.map((data, idx) => {
         return {
