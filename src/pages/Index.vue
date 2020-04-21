@@ -115,7 +115,7 @@ export default {
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=ConfirmedCount_Total%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&outSR=102100&resultOffset=0&resultRecordCount=2000&cacheHint=true",
       dataUrl:
-        "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1/FeatureServer/0?f=json",
+        "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1_VIEW/FeatureServer/0?f=json"finally,
       lastUpdated: "",
       jsonData: []
     };
