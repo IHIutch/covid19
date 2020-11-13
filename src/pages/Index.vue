@@ -327,29 +327,31 @@ export default {
   },
   computed: {
     formattedData() {
+      const arrLength = this.jsonData.length;
       return this.jsonData.map((data, idx) => {
-        return {
-          date: data.Date,
-          count: data.Confirmed_Total,
-          diff: this.jsonData[idx - 1]
-            ? this.jsonData[idx].Confirmed_Total -
-              this.jsonData[idx - 1].Confirmed_Total
-            : 0,
-          rate: this.getRate(idx).toFixed(2),
-          weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
-          active: data.Active_Total,
-          deaths: data.Deaths_Total,
-        };
-      });
+          return {
+            date: data.Date,
+            count: data.Confirmed_Total,
+            diff: this.jsonData[idx - 1]
+              ? this.jsonData[idx].Confirmed_Total -
+                this.jsonData[idx - 1].Confirmed_Total
+              : 0,
+            rate: this.getRate(idx).toFixed(2),
+            weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
+            active: data.Active_Total,
+            deaths: data.Deaths_Total,
+          };
+        }).splice(-1* arrLength + 13, arrLength - 13);
+        // Remove until Apr 1
     },
     predictedData() {
-      let filteredArr = [];
-      filteredArr = this.formattedData.filter((data) => {
+      const pastDays = 30;
+      const filteredArr = this.formattedData.filter((data) => {
         return data.weeklyAvgRate != 0;
       });
       return filteredArr.map((data) => {
         return this.getPrediction(data);
-      });
+      }).splice(-1* pastDays, pastDays);
     },
   },
   filters: {
