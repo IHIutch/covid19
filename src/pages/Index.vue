@@ -113,7 +113,7 @@ export default {
         "#dddddd",
       ],
       apiUrl:
-        "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/ErieCounty_Daily_Totals/FeatureServer/0/query?f=json&where=ConfirmedCount_Total%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&outSR=102100&resultOffset=0&resultRecordCount=2000&cacheHint=true",
+        "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/AddMoreDates_DailyTable_ViewLayer/FeatureServer/0/query?f=json&where=Daily_Count%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=32000&resultType=standard&cacheHint=true",
       dataUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1_VIEW/FeatureServer/0?f=json",
       lastUpdated: "",
@@ -156,8 +156,8 @@ export default {
     getRate(idx) {
       if (!this.jsonData[idx - 1]) return 0;
       return (
-        this.jsonData[idx].ConfirmedCount_Total /
-        this.jsonData[idx - 1].ConfirmedCount_Total
+        this.jsonData[idx].Confirmed_Total /
+        this.jsonData[idx - 1].Confirmed_Total
       );
     },
     getWeeklyAvg(idx) {
@@ -330,10 +330,10 @@ export default {
       return this.jsonData.map((data, idx) => {
         return {
           date: data.Date,
-          count: data.ConfirmedCount_Total,
+          count: data.Confirmed_Total,
           diff: this.jsonData[idx - 1]
-            ? this.jsonData[idx].ConfirmedCount_Total -
-              this.jsonData[idx - 1].ConfirmedCount_Total
+            ? this.jsonData[idx].Confirmed_Total -
+              this.jsonData[idx - 1].Confirmed_Total
             : 0,
           rate: this.getRate(idx).toFixed(2),
           weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
