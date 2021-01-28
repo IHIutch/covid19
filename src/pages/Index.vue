@@ -18,24 +18,20 @@
             <thead>
               <tr>
                 <th class="border px-2 py-1">Date</th>
-                <th class="border px-2 py-1">Active</th>
                 <th class="border px-2 py-1">Count</th>
                 <th class="border px-2 py-1">Diff</th>
-                <th class="border px-2 py-1">Rate</th>
-                <th class="border px-2 py-1">Avg Rate (7 Day)</th>
+                <th class="border px-2 py-1">Test Rate</th>
+                <th class="border px-2 py-1">Weekly Test Rate</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="(row, idx) in formattedData"
+                v-for="(row, idx) in formattedData.reverse()"
                 :key="idx"
                 :class="{ 'bg-gray-100': idx % 2 }"
               >
                 <td class="border px-2 py-1">
                   {{ row.date | date }}
-                </td>
-                <td class="border px-2 py-1">
-                  {{ row.active }}
                 </td>
                 <td class="border px-2 py-1">
                   {{ row.count }}
@@ -44,10 +40,10 @@
                   {{ row.diff == 0 ? "-" : row.diff }}
                 </td>
                 <td class="border px-2 py-1">
-                  {{ row.rate == "0.00" ? "-" : row.rate }}
+                  {{ row.testRate ? `${row.testRate}%` : "-" }}
                 </td>
                 <td class="border px-2 py-1">
-                  {{ row.weeklyAvgRate == "0.00" ? "-" : row.weeklyAvgRate }}
+                  {{ row.testWeeklyRate ? `${row.testWeeklyRate}%` : "-" }}
                 </td>
               </tr>
             </tbody>
@@ -112,16 +108,19 @@ export default {
         "#3d9970",
         "#dddddd",
       ],
+      pctUrl: "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/AddMoreDates_Trends_VIEW/FeatureServer/0/query?f=json&where=Daily_Pct%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&outSR=102100&resultOffset=0&resultRecordCount=32000&resultType=standard&cacheHint=true",
       apiUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/AddMoreDates_DailyTable_ViewLayer/FeatureServer/0/query?f=json&where=Daily_Count%20IS%20NOT%20NULL&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Date%20asc&resultOffset=0&resultRecordCount=32000&resultType=standard&cacheHint=true",
       dataUrl:
         "https://services1.arcgis.com/CgOSc11uky3egK6O/arcgis/rest/services/COVID_CNTY_Outline_1_VIEW/FeatureServer/0?f=json",
       lastUpdated: "",
       jsonData: [],
+      pctData:[]
     };
   },
   mounted() {
     this.fetchData();
+    this.fetchPctData();
     this.fetchUpdateTime();
   },
   methods: {
@@ -144,11 +143,32 @@ export default {
         .then((data) => {
           this.jsonData = data.features.map((data) => {
             return data.attributes;
+          }).map(data => {
+            return {
+              ...data, 
+              date: this.formatDate(data.Date)
+            }
           });
         })
         .then(() => {
           this.initCharts();
         });
+    },
+    fetchPctData(){
+      fetch(this.pctUrl)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          this.pctData = data.features.map((data) => {
+            return data.attributes;
+          }).map(data => {
+            return {
+              ...data, 
+              date: this.formatDate(data.Date)
+            }
+          });
+        })
     },
     formatDate(date) {
       return dayjs(date).format("MM/DD");
@@ -315,7 +335,7 @@ export default {
       };
       for (let i = 0; i < 6; i++) {
         obj.dates.push(obj.dates[i] + 86400000);
-        let multi = obj.counts[i] * parseFloat(data.weeklyAvgRate);
+        let multi = obj.counts[i] * (1 + parseFloat(data.weeklyAvgRate));
         obj.counts.push(multi.toFixed(2));
       }
       obj.dates = obj.dates.map((date) => {
@@ -323,6 +343,14 @@ export default {
       });
       return obj;
     },
+    findByDate(key, date){
+      if(!this.pctData.length) return null
+      var obj = this.pctData.find((data) => {
+          return data.date == date
+      })
+      // console.log(obj ? obj['Daily_Pct'] +  ", " + obj['Week_Pct'] : null)
+      return obj ? obj[key] : null
+    }
   },
   computed: {
     formattedData() {
@@ -337,6 +365,8 @@ export default {
               : 0,
             rate: this.getRate(idx).toFixed(2),
             weeklyAvgRate: this.getWeeklyAvg(idx).toFixed(2),
+            testRate: this.findByDate('Daily_Pct', data.date),
+            testWeeklyRate: this.findByDate('Week_Pct', data.date),
             active: data.Active_Total,
             deaths: data.Deaths_Total,
           };
