@@ -26,7 +26,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="(row, idx) in formattedData.reverse()"
+                v-for="(row, idx) in [...formattedData].reverse()"
                 :key="idx"
                 :class="{ 'bg-gray-100': idx % 2 }"
               >
@@ -65,7 +65,7 @@
         </div>
         <div class="shadow border rounded p-4 w-full mb-6">
           <div>
-            <h2 class="font-medium text-2xl">Infection Rate</h2>
+            <h2 class="font-medium text-2xl">Test Rate</h2>
           </div>
           <canvas id="chartThree"></canvas>
         </div>
@@ -118,6 +118,14 @@ export default {
       pctData:[]
     };
   },
+  watch: {
+    pctData(){
+      if(this.pctData.length && this.jsonData.length) this.initCharts();
+    },
+    jsonData(){
+      if(this.pctData.length && this.jsonData.length) this.initCharts();
+    }
+  },
   mounted() {
     this.fetchData();
     this.fetchPctData();
@@ -150,9 +158,6 @@ export default {
             }
           });
         })
-        .then(() => {
-          this.initCharts();
-        });
     },
     fetchPctData(){
       fetch(this.pctUrl)
@@ -216,7 +221,7 @@ export default {
         ],
       };
       const ctx = document.getElementById("chartOne");
-      const chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: "line",
         data: data,
         options: {
@@ -248,7 +253,7 @@ export default {
         ],
       };
       const ctx = document.getElementById("chartTwo");
-      const chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: "line",
         data: data,
         options: {
@@ -264,8 +269,11 @@ export default {
       });
     },
     initChartThree() {
+      const filteredData = this.formattedData.filter((data) => {
+        return data.testRate;
+      });
       const data = {
-        labels: this.formattedData.map((data) => {
+        labels: filteredData.map((data) => {
           return this.formatDate(data.date);
         }),
         datasets: [
@@ -273,14 +281,14 @@ export default {
             fill: false,
             backgroundColor: this.colors[0],
             borderColor: this.colors[0],
-            data: this.formattedData.map((data) => {
-              return data.rate;
-            }),
+            data: filteredData.map(data => {
+              return data.testRate;
+            })
           },
         ],
       };
       const ctx = document.getElementById("chartThree");
-      const chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: "line",
         data: data,
         options: {
@@ -316,7 +324,7 @@ export default {
         datasets: datasets,
       };
       const ctx = document.getElementById("chartFour");
-      const chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: "line",
         data: data,
         options: {
@@ -348,7 +356,6 @@ export default {
       var obj = this.pctData.find((data) => {
           return data.date == date
       })
-      // console.log(obj ? obj['Daily_Pct'] +  ", " + obj['Week_Pct'] : null)
       return obj ? obj[key] : null
     }
   },
