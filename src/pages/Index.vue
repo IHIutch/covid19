@@ -155,10 +155,9 @@ export default {
     },
     getRate(idx) {
       if (!this.jsonData[idx - 1]) return 0;
-      return (
-        this.jsonData[idx].Confirmed_Total /
-        this.jsonData[idx - 1].Confirmed_Total
-      );
+      const v1 = this.jsonData[idx].Confirmed_Total;
+      const v2 = this.jsonData[idx - 1].Confirmed_Total;
+      return ((v2 - v1) / v1);
     },
     getWeeklyAvg(idx) {
       if (idx < 7) return 0;
